@@ -31,22 +31,27 @@ interface LibraryBook {
 
 const BookCard: FC<BookCardPropsType> = ({ book }) => {
   const [isAdded, setIsAdded] = useState(false)
-  const [libraryBookId, setLibraryBookId] = useState<string | null>(null)
-  const [modalMessage, setModalMessage] = useState<string | null>(null)
-  const [shouldRedirectAfterModal, setShouldRedirectAfterModal] = useState(false)
+  const [libraryBookId, setLibraryBookId] = useState<string | null>(
+    null,
+  )
+  const [modalMessage, setModalMessage] = useState<string | null>(
+    null,
+  )
+  const [shouldRedirectAfterModal, setShouldRedirectAfterModal] =
+    useState(false)
   const router = useRouter()
 
   useEffect(() => {
     const checkIfBookExists = async () => {
-      const cookies = document.cookie
-      const accessToken = cookies
-        .split('; ')
-        .find((row) => row.startsWith('accessToken='))
-        ?.split('=')[1]
+      // const cookies = document.cookie
+      // const accessToken = cookies
+      //   .split('; ')
+      //   .find((row) => row.startsWith('accessToken='))
+      //   ?.split('=')[1]
 
-      if (!accessToken) {
-        return 
-      }
+      // if (!accessToken) {
+      //   return
+      // }
 
       try {
         const libraryBooks = await fetchWithAuth<LibraryBook[]>(
@@ -135,9 +140,11 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
         typeof error === 'object' &&
         error !== null &&
         'response' in error &&
-        typeof (error as { response?: { status?: number } }).response?.status === 'number'
+        typeof (error as { response?: { status?: number } }).response
+          ?.status === 'number'
       ) {
-        status = (error as { response: { status: number } }).response.status
+        status = (error as { response: { status: number } }).response
+          .status
       } else if (
         error instanceof Error &&
         error.message.includes('이미')
@@ -248,4 +255,3 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
 }
 
 export default BookCard
-
