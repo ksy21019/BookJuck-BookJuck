@@ -11,9 +11,10 @@ export default function ProfileItem() {
   const [updateNickName, setUpdateNickName] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
   const [active, setActive] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
   const router = useRouter()
 
-  const clickHandler = () => {
+  const handleConfirm = () => {
     const fetchNickName = async () => {
       try {
         const newNickName: ProfileType = await fetchWithAuth(
@@ -28,6 +29,7 @@ export default function ProfileItem() {
         setNickName(newNickName?.nickName)
         setUpdateNickName('')
         setActive(false)
+        setIsEditing(false)
         router.refresh()
       } catch (error) {
         if (error instanceof Error)
@@ -36,6 +38,18 @@ export default function ProfileItem() {
       }
     }
     fetchNickName()
+  }
+
+  const handleEdit = () => {
+    setIsEditing(true)
+    setUpdateNickName(nickName)
+  }
+
+  const handleCancel = () => {
+    setIsEditing(false)
+    setUpdateNickName('')
+    setErrorMsg('')
+    setActive(false)
   }
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -82,7 +96,7 @@ export default function ProfileItem() {
         {email ? (
           <p className="w-2/3">{email}</p>
         ) : (
-          <div className="w-2/3 h-6 bg-gray-200 rounded animate-pulse"></div>
+          <div className="w-2/3 h-7 bg-gray-200 rounded animate-pulse"></div>
         )}
       </div>
       <div className="flex w-5/6 justify-between items-start">
@@ -90,35 +104,69 @@ export default function ProfileItem() {
           닉네임
         </label>
         <div className="flex flex-col justify-start w-2/3 gap-1.5">
-          <input
-            type="text"
-            name="nickName"
-            value={updateNickName}
-            onChange={handleInput}
-            placeholder={nickName}
-            className="w-full h-11 p-2 border border-zinc-200 rounded focus:ring-1 focus:ring-inset focus:ring-gray-400 focus:outline-none"
-          />
-          <div className="text-sm h-6 text-red-600">{errorMsg}</div>
+          {isEditing ? (
+            <>
+              <input
+                type="text"
+                name="nickName"
+                value={updateNickName}
+                onChange={handleInput}
+                placeholder={nickName}
+                className="w-full h-11 p-2 border border-zinc-200 rounded focus:ring-1 focus:ring-inset focus:ring-gray-400 focus:outline-none"
+              />
+              <div className="text-sm h-6 text-red-600">
+                {errorMsg}
+              </div>
+            </>
+          ) : (
+            <>
+              {nickName ? (
+                <p className="h-11 flex items-center">{nickName}</p>
+              ) : (
+                <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
+              )}
+              <div className="text-sm h-6"></div>
+            </>
+          )}
         </div>
       </div>
       <section className="flex w-1/2 justify-between mt-2">
-        <button
-          className="px-4 py-2 border rounded border-gray-200 hover:bg-gray-100 cursor-pointer"
-          onClick={() => router.back()}
-        >
-          취소
-        </button>
-        <button
-          disabled={!active}
-          onClick={clickHandler}
-          className={`px-4 py-2 border rounded border-gray-200 ${
-            active
-              ? 'bg-slate-950 text-white hover:bg-gray-800 cursor-pointer'
-              : 'cursor-not-allowed'
-          }`}
-        >
-          수정
-        </button>
+        {isEditing ? (
+          <>
+            <button
+              className="px-4 py-2 border rounded border-gray-200 hover:bg-gray-100 cursor-pointer"
+              onClick={handleCancel}
+            >
+              취소
+            </button>
+            <button
+              disabled={!active}
+              onClick={handleConfirm}
+              className={`px-4 py-2 border rounded border-gray-200 ${
+                active
+                  ? 'bg-slate-950 text-white hover:bg-gray-800 cursor-pointer'
+                  : 'cursor-not-allowed'
+              }`}
+            >
+              확인
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              className="px-4 py-2 border rounded border-gray-200 hover:bg-gray-100 cursor-pointer"
+              onClick={() => router.back()}
+            >
+              취소
+            </button>
+            <button
+              className="px-4 py-2 border rounded border-gray-200 bg-slate-950 text-white hover:bg-gray-800 cursor-pointer"
+              onClick={handleEdit}
+            >
+              수정
+            </button>
+          </>
+        )}
       </section>
     </div>
   )
