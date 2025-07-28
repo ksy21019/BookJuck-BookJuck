@@ -43,15 +43,15 @@ const BookCard: FC<BookCardPropsType> = ({ book }) => {
 
   useEffect(() => {
     const checkIfBookExists = async () => {
-      // const cookies = document.cookie
-      // const accessToken = cookies
-      //   .split('; ')
-      //   .find((row) => row.startsWith('accessToken='))
-      //   ?.split('=')[1]
+      const cookies = document.cookie
+      const accessToken = cookies
+        .split('; ')
+        .find((row) => row.startsWith('accessToken='))
+        ?.split('=')[1]
 
-      // if (!accessToken) {
-      //   return
-      // }
+      if (!accessToken) {
+        return
+      }
 
       try {
         const libraryBooks = await fetchWithAuth<LibraryBook[]>(
